@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    Federated Learning of a Mixture of Global and Local Models |  Sugar
+    Hello World |  Sugar
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -33,7 +33,7 @@
 
   
 
-</head>
+<link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head>
 
 </html>
 
@@ -44,7 +44,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-L2SGD"
+  id="post-hello-world"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -55,26 +55,22 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  Federated Learning of a Mixture of Global and Local Models
+  Hello World
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2021/01/26/L2SGD/" class="article-date">
-  <time datetime="2021-01-26T13:31:57.000Z" itemprop="datePublished">2021-01-26</time>
-</a> 
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/paper/">paper</a>
-  </div>
-  
+      <a href="/2021/01/22/hello-world/" class="article-date">
+  <time datetime="2021-01-22T12:49:59.736Z" itemprop="datePublished">2021-01-22</time>
+</a>   
 <div class="word_count">
     <span class="post-time">
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">1.7k</span>
+            <span class="post-count">80</span>
         </span>
     </span>
 
@@ -83,7 +79,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">7 分钟</span>
+            <span class="post-count">1 分钟</span>
         </span>
     </span>
 </div>
@@ -98,99 +94,28 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <!-- TOC -->
-
-<ul>
-<li><a href="#introduction">Introduction</a><ul>
-<li><a href="#11-federated-learning">1.1 Federated learning</a></li>
-</ul>
-</li>
-<li><a href="#contributions">Contributions</a></li>
-<li><a href="#%E6%96%B0%E7%9A%84%E4%BC%98%E5%8C%96%E9%97%AE%E9%A2%98">新的优化问题</a></li>
-<li><a href="#l2gd-loopless-local-gd">L2GD: Loopless Local GD</a><ul>
-<li><a href="#%E6%94%B6%E6%95%9B%E7%90%86%E8%AE%BA">收敛理论</a></li>
-<li><a href="#%E6%94%B6%E6%95%9B%E7%8E%87%E4%BC%98%E5%8C%96">收敛率优化</a></li>
-</ul>
-</li>
-<li><a href="#loopless-local-sgd-with-variance-reduction">Loopless Local SGD with Variance Reduction</a><ul>
-<li><a href="#%E9%97%AE%E9%A2%98%E8%AE%BE%E7%BD%AE">问题设置</a></li>
-<li><a href="#%E7%90%86%E8%AE%BA">理论</a></li>
-</ul>
-</li>
-<li><a href="#experiments">Experiments</a></li>
-<li><a href="#%E9%99%84%E5%BD%95">附录</a><ul>
-<li><a href="#experimental-setup-and-further-experiments">Experimental Setup and further experiments</a></li>
-<li><a href="#%E5%85%B6%E4%BD%99%E7%AE%97%E6%B3%95">其余算法</a></li>
-</ul>
-</li>
-</ul>
-<!-- /TOC -->
-
-<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><h2 id="1-1-Federated-learning"><a href="#1-1-Federated-learning" class="headerlink" title="1.1 Federated learning"></a>1.1 Federated learning</h2><p>  联邦学习的目标函数：<br>  $$<br>  \min_{\bm{x} \in \mathbb{R}^{d}} \frac{1}{n}\sum_{i=1}^{n}f_{i}(\bm{x})<br>  $$<br>其中 $n$表示参与训练的节点个数，$\bm{x} \in \mathbb{R}^{d}$为全模型优化变量。 $f_{i}(\bm{x})$为节点$i$上的损失函数。</p>
-<h1 id="Contributions"><a href="#Contributions" class="headerlink" title="Contributions"></a>Contributions</h1><ul>
-<li>提出了新的FL优化形式，尝试学习全局模型和局部模型的混合。</li>
-<li>给出了新的优化形式的理论性质。作者证明了最优局部模型以$O(1/ \lambda)$收敛到传统的全局模型；作者证明了在局部模型上得到的损失不高于全局模型上的损失(定理3.1)；作者指出局部模型的最优解等于所有局部模型最优解的平均值减去对应局部模型上损失函数的一阶梯度，这一点和MAML一致。</li>
-<li>Loopless LGD：作者提出了一个随机梯度算法 — Loopless Local Gradient Descent (L2GD)（算法1）来解决提出的优化问题。该算法不是一个标准的SGD，它可以看作是一个关于损失函数和惩罚项的不均匀抽样。当抽到损失函数部分时，每个节点执行一次随机梯度下降；当抽到惩罚项时，进行信息聚合。</li>
-<li>收敛理论。假设函数 $f_{i}$ 为 $L-smooth$，并且为 $\mu-strong , convex$，可以得到抽样概率 $p^{*} = \frac{\lambda}{\lambda + L}$，固定期望局部更新次数为 $1 + \frac{L}{\lambda}$，作者证明通信 (communication) 复杂度为（通信次数上界）为 $\frac{2\lambda}{\lambda + L}\frac{L}{\mu}\log\frac{1}{\epsilon}$。当 $\lambda \to 0$时，通信次数非常小；当 $\lambda \to \infty $时，根据新优化问题得到的解收敛到全局模型最优解，并且L2GD 算法的通信上界为 $O(\frac{L}{\mu}\log\frac{1}{\epsilon})$。</li>
-<li>推广。部分连接，局部SGD，variance reduction（variance来自三部分：非均匀抽样，部分连接，从节点样本随机抽样）。</li>
-<li>可用于异质数据。</li>
-<li>经验表现不错。</li>
-</ul>
-<h1 id="新的优化问题"><a href="#新的优化问题" class="headerlink" title="新的优化问题"></a>新的优化问题</h1><p>$$<br>\min_{\bm{x_{1},…,x_{n}} \in \mathbb{R}^{d}} { F(\bm{x}) := f(\bm{x}) + \lambda \psi(\bm{x})}<br>$$<br>$$<br>f(\bm{x}):= \frac{1}{n}\sum_{i=1}^{n}f_{i}(\bm{x_{i}}), \quad \psi(\bm{x}):= \frac{1}{2n}\sum_{i=1}^{n}|\bm{x_{i}} - \bm{\bar{x}}|^{2}<br>$$</p>
-<ul>
-<li>Local model ($\lambda = 0$)</li>
-<li>Mixed model ($\lambda \in (0, \infty)$)</li>
-<li>Global model ($\lambda = \infty$)</li>
-</ul>
-<h1 id="L2GD-Loopless-Local-GD"><a href="#L2GD-Loopless-Local-GD" class="headerlink" title="L2GD: Loopless Local GD"></a>L2GD: Loopless Local GD</h1><p>在这一部分中，作者给出一个算法求解上述优化问题，该算法可以看作是一个非均匀SGD，要么抽取 $\nabla f$，要么抽取 $\nabla \psi$ 估计 $\nabla F$。令 $ 0 &lt; p &lt; 1 $，定义一个随机梯度如下：<br>$$<br>G(\bm{x}):= \begin{cases} \frac{\nabla f(\bm{x})}{1-p}, &amp; \text {概率 $1-p$} \ \frac{\lambda \nabla \psi(\bm{x})}{p}, &amp; \text{概率 $p$ } \end{cases}<br>$$<br>显然，$G(\bm{x})$为 $\nabla F(\bm{x})$的无偏估计量。<br>每步的更新为:<br>$$<br>\bm{x}^{k+1} = \bm{x}^{k} - \alpha G(\bm{x}).<br>$$</p>
-<p><img src="./assets/l2gd.png" alt="Algorithm 1"></p>
-<p>$\textbf{Lemma 4.2}$  经过 $k$ 步迭代后，期望的通信次数为 $p(1-p)k$。</p>
-<h2 id="收敛理论"><a href="#收敛理论" class="headerlink" title="收敛理论"></a>收敛理论</h2><p>作者首先证明梯度估计量$G(\bm{x})$的期望具有光滑性质，然后证明了算法L2GD的收敛性质。（$\bm{x(\lambda)}$为最优解，定理4.4 表明，L2GD算法只能收敛到最优解邻域。）<br><img src="./assets/4.3.png" alt=" "></p>
-<h2 id="收敛率优化"><a href="#收敛率优化" class="headerlink" title="收敛率优化"></a>收敛率优化</h2><p>作者给出最优抽样概率 $p^{*} = \frac{\lambda}{L + \lambda}$，步长 $\alpha$ 要满足 $\frac{\alpha\lambda}{np} \leq \frac{1}{2}$.<br><img src="./assets/4.4.png" alt=" "></p>
-<h1 id="Loopless-Local-SGD-with-Variance-Reduction"><a href="#Loopless-Local-SGD-with-Variance-Reduction" class="headerlink" title="Loopless Local SGD with Variance Reduction"></a>Loopless Local SGD with Variance Reduction</h1><p>L2GD算法仅线性收敛到最优解的邻域，无法收敛到最优解。假设每个子目标函数具有有限和形式，作者提出了一个算法L2SGD+，在每个节点上进行随机梯度下降，并且具有线性收敛速度。L2SGD是一个具有variance reduction 的局部SGD算法，关于SGD的variance reduction，见另一篇博客：SGD with variance reduction.</p>
-<h2 id="问题设置"><a href="#问题设置" class="headerlink" title="问题设置"></a>问题设置</h2><p>假设 $f_{i}$ 具有有限和结构：<br>$$<br>f_{i} = \frac{1}{m}\sum_{i=1}^{m}f_{i,j}(\bm{x}_{i})<br>$$</p>
-<p>那么目标函数变为：<br>$$<br>F(\bm{x}) = \frac{1}{n}\sum_{i=1}^{n}(\frac{1}{m}\sum_{i=1}^{m}f_{i,j}(\bm{x}<em>{i})) + \lambda\frac{1}{2n}\sum</em>{i=1}^{n}|\bm{x}_{i} - \bm{\bar{x}}|^{2}<br>$$</p>
-<p><img src="./assets/l2sgd+.png" alt=" "></p>
-<p>L2SGD算法仅在两次抽样不同时才会发生通信，经过 $k$ 次迭代后，需要进行 $p(1-p)k$ 次聚合平均。但是，L2SGD算法还需要通信控制变量 $\bm{J_{i}I,  \Psi_{i}}$，因此通信次数变为原来的3倍。在附录中，作者给出了一个高效的L2SGD+，不需要通信控制变量。</p>
-<h2 id="理论"><a href="#理论" class="headerlink" title="理论"></a>理论</h2><p>作者给出了L2SGD算法的理论性质，并且给出最优抽样概率 $p^{*}$。</p>
-<p><img src="./assets/5.1.jpg" alt=" "><br><img src="./assets/5.2.png" alt=" "><br><img src="./assets/5.3.png" alt=" "></p>
-<h1 id="Experiments"><a href="#Experiments" class="headerlink" title="Experiments"></a>Experiments</h1><p>作者考虑Logistic回归问题，数据为LibSVM data(Chank &amp; Lin, 2011)。数据首先进行normalized，以使得 $f_{ij}$ 为1-smooth。步长根据定理5.2确定。每个数据集被划分为不同个数的节点，具体参数设置如下：<br><img src="./assets/table1.png" alt=" "></p>
-<p>作者考虑三种算法：L2SGD+, L2SGD(L2GD with local SGD), L2SGD2(L2GD with local subsampling and control variates constructed for $\Psi$)。根据理论分析，L2SGD+线性收敛到最优解，而L2SGD和L2SGD2收敛到最优解邻域。</p>
-<p>作者考虑了两种数据分割方式。对于homogeneous data, 首先将观测样本随机打乱，然后按照打乱后的数据划分到不同节点上；对于heterogeneous data, 首先根据观测样本的标签将样本排序，然后将排序后的数据依次划分到不同节点上 (the worst-case heterogeneity)。</p>
-<p><img src="./assets/figure3.png" alt=" "></p>
-<p>结果表明</p>
-<ul>
-<li>L2SGD+ (Full variance reduction)可以收敛到最优解，而 L2SGD(without variance reduction)和 L2SGD2(with partial variance<br>reduction) 只收敛到最优解邻域。</li>
-<li>进行variance reduction是非常有必要的。它可以保证较快的全局收敛。</li>
-<li>数据异质性对算法收敛性没有影响。</li>
-</ul>
-<h1 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h1><h2 id="Experimental-Setup-and-further-experiments"><a href="#Experimental-Setup-and-further-experiments" class="headerlink" title="Experimental Setup and further experiments"></a>Experimental Setup and further experiments</h2><ul>
-<li>参数 $p$ 如何影响算法L2SGD+的收敛速度</li>
-<li>参数 $\lambda$ 如何影响算法L2SGD+的收敛速度</li>
-</ul>
-<h2 id="其余算法"><a href="#其余算法" class="headerlink" title="其余算法"></a>其余算法</h2><ul>
-<li><p>Local GD with variance reduction</p>
-<p>当每个节点采用梯度下降算法，且考虑variance reduction时，</p>
-<p><img src="./assets/b1.png" alt=" "><br><img src="./assets/a3.png" alt=" "></p>
-</li>
-<li><p>Efficient implementation of L2SGD+<br>考虑到L2SGD+需要通信控制变量，增加了通信次数。作者给出了一个高效的版本，不需要通信控制变量，$k$次迭代只需要通信 $p(1-p)k$次。</p>
-<p><img src="./assets/a4.png" alt=" "></p>
-</li>
-<li><p>Local SGD with variance reduction – general method<br>在这部分中，作者给出了一个使用性更广的版本。每个节点上目标函数可以包含一个非光滑正则项：</p>
-<p> <img src="./assets/b3.png" alt=" "></p>
-<p>另外，该版本算法允许从所有节点中任意抽样，允许节点结构任意（比如节点数据集大小，目标函数光滑程度，每个节点抽样方式任意）。</p>
-<p><img src="./assets/a5.png" alt=" "></p>
-</li>
-</ul>
-<ul>
-<li><p>Local stochastic algorithms</p>
-<p>在这部分中，作者给出两个简单算法，不考虑variance reduction的Local SGD(算法6)以及只考虑部分variance reduction的Local SGD (算法7)。</p>
-<p><img src="./assets/a6.png" alt=" "></p>
-<p><img src="./assets/a7.png" alt=" "></p>
-</li>
-</ul>
+  <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="create-a-new-post">Create a new post</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="run-server">Run server</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="generate-static-files">Generate static files</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="deploy-to-remote-sites">Deploy to remote sites</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
  
       <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
       
     </div>
     
@@ -253,24 +178,22 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/01/26/L2SGD/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/01/22/hello-world/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>  
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/FL/" rel="tag">FL</a></li></ul>
-
     </footer>
   </div>
 
    
   <nav class="article-nav">
     
-      <a href="/2021/01/26/AL2SGD/" class="article-nav-link">
+      <a href="/2021/01/25/L2SGD/" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
-            AL2SGD
+            Federated Learning of a Mixture of Global and Local Models
           
         </div>
       </a>
@@ -422,7 +345,7 @@
     </li>
     
     <li class="nav-item">
-      <a class="nav-item-link" href="/">摄影</a>
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://shenyu-vip.lofter.com">摄影</a>
     </li>
     
     <li class="nav-item">
@@ -430,7 +353,7 @@
     </li>
     
     <li class="nav-item">
-      <a class="nav-item-link" href="/2021/about">关于我</a>
+      <a class="nav-item-link" href="/2019/about">关于我</a>
     </li>
     
   </ul>
@@ -469,9 +392,19 @@
 <!-- #reward -->
 <div id="reward">
   <span class="close"><i class="ri-close-line"></i></span>
-  <p class="reward-p"><i class="ri-cup-line"></i></p>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
   <div class="reward-box">
     
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
     
   </div>
 </div>
