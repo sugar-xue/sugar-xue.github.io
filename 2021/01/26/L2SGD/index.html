@@ -148,7 +148,7 @@ G(\bm{x}):= \begin{cases} \frac{\nabla f(\bm{x})}{1-p}, & \text {概率 $1-p$} \
 <h1 id="Loopless-Local-SGD-with-Variance-Reduction"><a href="#Loopless-Local-SGD-with-Variance-Reduction" class="headerlink" title="Loopless Local SGD with Variance Reduction"></a>Loopless Local SGD with Variance Reduction</h1><p>L2GD算法仅线性收敛到最优解的邻域，无法收敛到最优解。假设每个子目标函数具有有限和形式，作者提出了一个算法L2SGD+，在每个节点上进行随机梯度下降，并且具有线性收敛速度。L2SGD是一个具有variance reduction 的局部SGD算法，关于SGD的variance reduction，见另一篇博客：SGD with variance reduction.</p>
 <h2 id="问题设置"><a href="#问题设置" class="headerlink" title="问题设置"></a>问题设置</h2><p>假设 $f_{i}$ 具有有限和结构：</p>
 <script type="math/tex; mode=display">
-f_{i} = \frac{1}{m}\sum_{i=1}^{m}f_{i,j}(\bm{x}_{i})</script><p>那么目标函数变为：</p>
+f_{i} = \frac{1}{m}\sum_{j=1}^{m}f_{i,j}(\bm{x}_{i})</script><p>那么目标函数变为：</p>
 <script type="math/tex; mode=display">
 F(\bm{x}) = \frac{1}{n}\sum_{i=1}^{n}(\frac{1}{m}\sum_{i=1}^{m}f_{i,j}(\bm{x}_{i})) + \lambda\frac{1}{2n}\sum_{i=1}^{n}\|\bm{x}_{i} - \bm{\bar{x}}\|^{2}</script><p><img src="/2021/01/26/L2SGD/l2sgd+.png" alt=" "></p>
 <p>L2SGD算法仅在两次抽样不同时才会发生通信，经过 $k$ 次迭代后，需要进行 $p(1-p)k$ 次聚合平均。但是，L2SGD算法还需要通信控制变量 $\bm{J<em>{i}I,  \Psi</em>{i}}$，因此通信次数变为原来的3倍。在附录中，作者给出了一个高效的L2SGD+，不需要通信控制变量。</p>

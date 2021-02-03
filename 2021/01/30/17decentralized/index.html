@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    Gradient Descent, Stochastic Gradient Descent, Variance Reduction |  Sugar
+    Decentralized Collaborative Learning of Personalized Models over Networks |  Sugar
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -44,7 +44,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-GD"
+  id="post-17decentralized"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -55,15 +55,15 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  Gradient Descent, Stochastic Gradient Descent, Variance Reduction
+  Decentralized Collaborative Learning of Personalized Models over Networks
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2021/01/27/GD/" class="article-date">
-  <time datetime="2021-01-27T01:53:22.728Z" itemprop="datePublished">2021-01-27</time>
+      <a href="/2021/01/30/17decentralized/" class="article-date">
+  <time datetime="2021-01-30T13:43:19.000Z" itemprop="datePublished">2021-01-30</time>
 </a> 
   <div class="article-category">
     <a class="article-category-link" href="/categories/paper/">paper</a>
@@ -74,7 +74,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">1.7k</span>
+            <span class="post-count">2.5k</span>
         </span>
     </span>
 
@@ -83,7 +83,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">7 分钟</span>
+            <span class="post-count">9 分钟</span>
         </span>
     </span>
 </div>
@@ -92,60 +92,52 @@
       
     <div class="article-entry" itemprop="articleBody">
        
-  <h1 id="SVRG2013-Accelerating-Stochastic-Gradient-Descent-using-Predictive-Variance-Reduction"><a href="#SVRG2013-Accelerating-Stochastic-Gradient-Descent-using-Predictive-Variance-Reduction" class="headerlink" title="[SVRG2013] Accelerating Stochastic Gradient Descent using Predictive Variance Reduction"></a>[SVRG2013] Accelerating Stochastic Gradient Descent using Predictive Variance Reduction</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>考虑如下优化问题 </p>
+  <p>考虑点对点的协作网络。本文解决的问题是：每个节点如何与具有相似目标的其他节点进行通信来改善本地模型？作者介绍了两种完全去中心化的算法，一种是受标签传播的启发，旨在平滑预先训练好的局部模型；第二种方法，节点基于本地数据核相邻节点进行迭代更新来共同学习和传播。</p>
+<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>数据不断产生，当前从数据中提取信息的主要方式是收集所有用户的个人数据于一个服务器上，然后进行数据挖掘。但是，中心化的方式存在一些问题，比如说一些用户拒绝提供个人数据，带宽和设备花费问题。即使一些算法允许数据分布在用户设备上，通常需要中心端来进行聚合和协调。</p>
+<p>在本文中，作者考虑完全去中心化的点对点网络。不同于那些求解全局模型的算法，本文关注于每个节点可以根据自身目标函数学习一个个性化模型。作者假设网络结构已知，该网络结构能够反映出不同节点的相似度（如果两个节点具有相似的目标函数，那么这两个节点在网络中是邻居），每个节点只知道与其直接相邻的节点。一个节点不仅可以根据自身数据学习模型，还可以结合它的邻居。假设每个节点只知道相邻节点的信息，不知道整个网络结构。</p>
+<p>作者提出两个算法。第一个是 model propagation：首先，每个节点先基于自己的局部数据学习到模型参数，然后，结合整个网络结构，平滑这些参数。第二个是 collaborative learning，这个算法更加灵活，它通过优化一个模型参数正则化（平滑）和局部模型准确性上的折中问题。作者基于分布式的ADMM算法提出一个异步gossip算法。</p>
+<h1 id="Preliminaries"><a href="#Preliminaries" class="headerlink" title="Preliminaries"></a>Preliminaries</h1><h2 id="Notations-and-Problem-Setting"><a href="#Notations-and-Problem-Setting" class="headerlink" title="Notations and Problem Setting"></a>Notations and Problem Setting</h2><p>考虑 $n$ 个节点 $V = [n] = {1,…,n}$。凸的损失函数 $l: \mathbb{R}^{p} \times \mathcal{X} \times \mathcal{Y}$，节点 $i$ 的目标是学习模型参数 $\theta<em>{i} \in \mathbb{R}^{p}$，使得关于未知分布 $\mu</em>{i}$ 的期望损失 $E<em>{(x</em>{i}, y<em>{i})\sim \mu</em>{i}}l(\theta<em>{i}; x</em>{i}, y<em>{i})$ 很小。节点 $i$ 具有 $m</em>{i}$ 个来自分布 $\mu<em>{i}$ 的 i.i.d 的训练样本 $S</em>{i} = {(x<em>{i}^{j}, y</em>{i}^{j})}<em>{j=1}^{m</em>{i}}$。允许不同节点的样本量相差很大。每个节点可以最小化局部损失函数得到 $\theta_{i}^{sol}$:</p>
 <script type="math/tex; mode=display">
-\min P(\omega) = \frac{1}{n}\psi_{i}(\omega)</script><ul>
-<li>如果采用平方损失，最小二乘回归；</li>
-<li>考虑正则项，令 $\psi<em>{i}(\omega) = \ln(1 + \exp(-\omega^{T}x</em>{i}y<em>{i})) + 0.5\lambda\omega^{T}\omega, y</em>{i} \in {-1,1}$，regularized logistic regression。</li>
-</ul>
-<p>梯度下降算法更新过程：</p>
-<script type="math/tex; mode=display">
-\omega^{(t)} = \omega^{(t-1)} - \eta_{t}\nabla P(\omega^{(t-1)}) = \omega^{(t-1)} - \frac{\eta_{t}}{n}\sum_{i=1}^{n}\nabla \psi_{i}(\omega^{(t-1)})</script><p>但是，在每一步，GD都需要计算 $n$ 个一阶偏导，计算量大。所以，一个改进就是随机梯度下降SGD：在每一步迭代时，随机从 ${1,…,n}$ 中抽取 $i_{t}$，然后</p>
-<script type="math/tex; mode=display">
-\omega^{(t)} = \omega^{(t-1)} - \eta_{t}\nabla \psi_{i_{t}}(\omega^{(t-1)})</script><p>期望 $E[\omega^{(t)}|\omega^{(t-1)}]$ 同梯度更新的结果一致。 SGD的更一般表达形式为</p>
-<script type="math/tex; mode=display">
-\omega^{(t)} = \omega^{(t-1)} - \eta_{t}g_{t}(\omega^{(t-1)},  \xi_{t})</script><p>$\xi<em>{t}$ 为一个依赖于 $\omega^{(t-1)}$ 的随机变量， 并且期望 $E[g</em>{t}(\omega^{(t-1)},  \xi_{t})|\omega^{(t-1)}] = \nabla P(\omega^{(t-1)})$。 </p>
-<p>SGD的优势就是每步迭代只需要计算一个梯度，因此计算成本是GD的 $\frac{1}{n}$。但是，SGD的一个缺点就是随机性引入了方差：虽然 $g<em>{t}(\omega^{(t-1)},  \xi</em>{t})$ 的期望等于梯度 $\nabla P(\omega^{(t-1)})$，但是每个$g<em>{t}(\omega^{(t-1)},  \xi</em>{t})$ 是不同的。方差的出现导致收敛速度变慢。 对于SGD，由于随机取样带来的方差，一般都会要求其步长 $\eta_{t} = O(1/t)$，从而得到一个 sub-linear 收敛率 $O(1/t)$。</p>
+\theta_{i}^{sol} \in \argmin_{\theta \in \mathbb{R}^{p}} L_{i}(\theta) = \sum_{j=1}^{m_{i}} l(\theta;x_{i}^{j}, y_{i}^{j}).</script><p>我们目标是通过结合其他节点信息，进一步改善上述模型。考虑一个加权网络结构 $G = (V, E)$，具有 $V$ 个节点，$E \subseteq V \times V$ 为无向边。定义 $W \in \mathbb{R}^{n \times n}$ 为由 $G$ 得到的对称非负加权矩阵，如果 $(i,j) \ne E$ or $i = j$， $W<em>{ij} = 0$。本文假设权重矩阵已知。定义对角阵 $D\in \mathbb{R}^{n \times n}$，$D</em>{ii} = \sum<em>{j=1}^{n} W</em>{ij}$。节点 $i$ 的邻域 ：$\mathcal{N}<em>{i} = {j \ne i: W</em>{ij} &gt; 0}$。</p>
+<h1 id="Model-Propagation"><a href="#Model-Propagation" class="headerlink" title="Model Propagation"></a>Model Propagation</h1><p>假设每个节点通过最小化局部损失函数得到各自的模型 $\theta<em>{i}^{sol}$。由于每个节点上的模型都是在不同大小数据集上考虑得到，作者使用 $c</em>{i} \in (0,1]$ 定义每个节点模型的可信度。 $c<em>{i}$ 的值应该和节点 $i$ 的样本量大小呈正相关，可以设置为 $c</em>{i} = \frac{m<em>{i}}{\max</em>{j} m<em>{j}}$。如果 $m</em>{i}=0$，可以设置为一个小量。</p>
+<p>定义 $\Theta = [\theta<em>{1}; \theta</em>{2};…;\theta_{n}] \in \mathbb{R}^{n \times p}$，我们要优化的目标函数为：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/sugar-xue/BlogImages@main/Picbed1612018569.jpg" alt="1612018569"></p>
+<p>第一项二次函数用来平滑相邻节点的参数，当两个节点间权重越大时，节点间参数越相近；第二项的目的是使具有较高置信度的模型的参数不要太远离各自模型上的参数。具有较低置信度的模型的参数被允许具有较大的偏差，容易被相邻节点影响。$D_{ii}$ 的目的是为了normalization。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/sugar-xue/BlogImages@main/Picbed1612018994(1" alt="1612018994(1)">.png)<br><img src="https://cdn.jsdelivr.net/gh/sugar-xue/BlogImages@main/Picbed1612019022(1" alt="1612019022(1)">.png)</p>
+<p>计算 (4) 需要知道整个网络的信息以及所有节点的独立模型信息，这对于节点而言是未知的，因为每个节点只知道相邻节点的信息。因此，作者提出下面的迭代形式：<br><img src="https://cdn.jsdelivr.net/gh/sugar-xue/BlogImages@main/Picbed1612019342(1" alt="1612019342(1)">.png)</p>
+<p>作者证明，无论初始值 $\Theta(0)$ 取何值，上述迭代序列收敛到 (4)。(5) 式可以进一步分解为<br><img src="https://cdn.jsdelivr.net/gh/sugar-xue/BlogImages@main/Picbed1612019480(1" alt="1612019480(1)">.png)</p>
+<p>考虑一个同步计算：在每一步，每个节点都和其所有相邻节点进行通信，收集它们当前参数，然后使用它们的参数更新上式。同步更新会导致很大的延迟，因为任何节点都必须等剩余节点更新完后才能进行下一步更新。并且，每一步，所有节点都需要和其邻居节点进行通信，降低了算法的效率。所以作者提出一个异步算法。</p>
+<h2 id="Asynchronous-Gossip-Algorithm"><a href="#Asynchronous-Gossip-Algorithm" class="headerlink" title="Asynchronous Gossip Algorithm"></a>Asynchronous Gossip Algorithm</h2><p>在异步设置中，每个节点都有一个局部clock ticking at times of rate 1 Poisson process. 由于节点都是独立同分布的，所以相当于在每一步时等概率激活每个节点。</p>
+<p>在时间 $t$ 时，每个节点都存有相邻节点的信息。以数学形式表示，考虑矩阵 $\tilde{\Theta}<em>{i}(t) \in \mathbb{R}^{n \times p}$，第 $i$ 行 $\tilde{\Theta}</em>{i}^{i}(t) \in \mathbb{R}^{p}$ 为节点 $i$ 在时刻 $t$ 的模型参数，$\tilde{\Theta}<em>{i}^{j}(t) \in \mathbb{R}^{p} (j \ne i)$ 为节点 $i$ 储存的关于邻居节点 $j$ 的last knowledge. 对于 $j \notin \mathcal{N}</em>{i} \bigcup {i}$，$\forall t &gt; 0$，$\tilde{\Theta}<em>{i}^{j}(t) = 0$。令$\tilde{\Theta} = [\tilde{\Theta}</em>{1}^{T}, …,\tilde{\Theta}_{n}^{T}] \in \mathbb{R}^{n^{2} \times p}$。</p>
+<p>如果在时间 $t$ 时，节点 $i$ wakes up，执行如下步骤：</p>
 <ul>
-<li>GD: 每步迭代计算慢，收敛快。</li>
-<li>SGD：每步迭代计算快，收敛慢。</li>
+<li><p>communication: 节点 $i$ 随机选择一个邻居节点 $j \in \mathcal{N}<em>{i}$，(先验概率 $\pi</em>{i}^{j}$)，节点 $i$ 和节点 $j$ 同时更新它们的参数：</p>
+<script type="math/tex; mode=display">
+\tilde{\Theta}_{i}^{j}(t+1) = \tilde{\Theta}_{j}^{j}(t) \qquad \tilde{\Theta}_{j}^{i}(t+1) = \tilde{\Theta}_{i}^{i}(t),</script></li>
+<li><p>update: 基于当前信息，节点 $i$ 和节点 $j$ 更新自己的模型参数：</p>
+<script type="math/tex; mode=display">
+\tilde{\Theta}_{l}^{l}(t+1) = (\alpha +\bar{\alpha}c_{l})^{-1}(\alpha \sum_{k \in \mathcal{N}_{l}} \frac{W_{lk}}{D_{ll}}\tilde{\Theta}_{l}^{k}(t+1) + \bar{\alpha}c_{l}\theta^{sol}_{l}) \quad(l \in \{i,j\}).</script><p>网络中的其他变量保持不变。作者提出的算法属于 gossip algorithms，每个节点每次最多只和一个邻居节点通信。</p>
+<p>作者证明，上述算法可以收敛到使每个节点具有最优参数。</p>
+<p>  <img src="https://cdn.jsdelivr.net/gh/sugar-xue/BlogImages@main/Picbed1612340701.jpg" alt="1612340701"></p>
+</li>
 </ul>
-<p>为了改进SGD，一些学者开始设计算法以减少方差，从而可以使用较大的步长 $\eta_{t}$。有一些算法被提出来，比如：SAG(stochastic average gradient)，SDCA。但是这两个算法需要存储所有的梯度，一些情况下不太实际。因此作者提出了一个新的算法，该算法不需要存储所有的梯度信息，并且有较快的收敛速度，可以应用于非凸优化问题。</p>
-<h2 id="Stochastic-Variance-Reduced-Gradient-SVRG"><a href="#Stochastic-Variance-Reduced-Gradient-SVRG" class="headerlink" title="Stochastic Variance Reduced Gradient (SVRG)"></a>Stochastic Variance Reduced Gradient (SVRG)</h2><p>为了保证收敛，SGD的步长必须衰减到0，从而导致收敛率变慢。需要较小步长的原因就是SGD的方差。作者提出一个解决方案。每进行 $m$ 次SGD迭代后，记录当前参数 $\tilde{\omega}$ 以及平均梯度：</p>
-<script type="math/tex; mode=display">
-\tilde{\mu} = \nabla P(\tilde{\omega}) = \frac{1}{n}\sum_{i=1}^{n} \nabla \psi_{i}(\tilde{\omega}).</script><p>然后接下来的更新为：</p>
-<script type="math/tex; mode=display">
-\omega^{(t)} = \omega^{(t-1)} - \eta_{t}(\nabla \psi_{i_{t}}(\omega^{(t-1)}) - \nabla \psi_{i_{t}}(\tilde{\omega}) + \tilde{\mu})</script><p>注意到：</p>
-<script type="math/tex; mode=display">
-E[\omega^{(t)}|\omega^{(t-1)}] = \omega^{(t-1)} - \eta_{t}\nabla P(\omega^{(t-1)})</script><p>算法如下：</p>
-<p>  <img src="/2021/01/27/GD/SVRG.png" alt=" "></p>
-<p>更新步骤中梯度的方差是减小的。当 $\tilde{\omega}$ 和 $\omega^{(t)}$ 收敛到最优参数 $\omega<em>{*}$，$\tilde{\mu} \to 0$， $\nabla\psi</em>{i}(\tilde{\omega}) \to \nabla \psi<em>{i}(\omega</em>{*})$，有</p>
-<script type="math/tex; mode=display">
-\nabla\psi_{i}(\omega^{(t-1)}) - \nabla\psi_{i}(\tilde{\omega
-}) + \tilde{\mu} \to \nabla\psi_{i}(\omega^{(t-1)}) - \nabla\psi_{i}(\omega_{*}) \to 0</script><p>SVRG的学习率不需要衰减，因此能有较快的收敛速度。作者提到，参数 $m$ 应该 $O(n)$， 比如对于凸问题：$m = 2n$，非凸问题：$m = 2n$。</p>
-<h1 id="SAGA2015-SAGA-A-Fast-Incremental-Gradient-Method-With-Support-for-Non-Strongly-Convex-Composite-Objectives"><a href="#SAGA2015-SAGA-A-Fast-Incremental-Gradient-Method-With-Support-for-Non-Strongly-Convex-Composite-Objectives" class="headerlink" title="[SAGA2015] SAGA: A Fast Incremental Gradient Method With Support for Non-Strongly Convex Composite Objectives"></a>[SAGA2015] SAGA: A Fast Incremental Gradient Method With Support for Non-Strongly Convex Composite Objectives</h1><p>考虑最小化函数：</p>
-<script type="math/tex; mode=display">
-f(x) = \frac{1}{n}\sum_{i=1}^{n}f_{i}(x)</script><p>作者提出了一个叫做SAGA的算法，在目标函数为强凸函数时，SAGA的收敛速度优于SAG和SVRG。算法如下：</p>
-<p>  <img src="/2021/01/27/GD/SAGA.png" alt=" "></p>
-<p>  本文给出了variance reduction算法的一个解释：<br>   <img src="/2021/01/27/GD/SAGA1.png" alt=" "></p>
-<p> 几种算法比较：<br>   <img src="/2021/01/27/GD/SAGA2.png" alt=" "></p>
-<h1 id="Variance-Reduced-Stochastic-Gradient-Descent-with-Neighbors-2015"><a href="#Variance-Reduced-Stochastic-Gradient-Descent-with-Neighbors-2015" class="headerlink" title="[Variance Reduced Stochastic Gradient Descent with Neighbors 2015]"></a>[Variance Reduced Stochastic Gradient Descent with Neighbors 2015]</h1><h1 id="Katyusha-2017-Katyusha-The-First-Direct-Acceleration-of-Stochastic-Gradient-Methods"><a href="#Katyusha-2017-Katyusha-The-First-Direct-Acceleration-of-Stochastic-Gradient-Methods" class="headerlink" title="[Katyusha 2017] Katyusha: The First Direct Acceleration of Stochastic Gradient Methods"></a>[Katyusha 2017] Katyusha: The First Direct Acceleration of Stochastic Gradient Methods</h1><p>Nesterov’s momentum 通常用于加速梯度下降算法，但是，对于随机梯度下降，Nesterov’s momentum 可能无法对算法进行加速，即使优化目标为凸函数。因此，针对SGD，作者提出 Katyusha 算法，借助于动量Katyusha momentum实现加速SGD。</p>
-<p>考虑如下优化问题：</p>
-<script type="math/tex; mode=display">
-\min_{x \in \mathbb{R}^{d}} \{F(x) = f(x) + \psi(x) = \frac{1}{n}\sum_{i=1}^{n} f_{i}(x) + \psi(x)\}</script><p>其中 $f(x) = \frac{1}{n}\sum<em>{i=1}^{n} f</em>{i}(x)$ 为凸函数，并且是 $n$ 个凸函数的有限平均。$\psi(x)$ 为凸函数，可为近端函数。大多数假设 $\psi(x)$ 为 $\sigma$-strongly，并且 $f_{i}(x)$ L-smooth。</p>
-<p>作者提出一个可以求解上述优化问题的加速随机梯度下降算法-Katyusha：</p>
-<p>   <img src="/2021/01/27/GD/ka.png" alt=" "></p>
-<p>其中，$\tilde{x}$ 为snapshot point，每经过 $n$ 次迭代更新一次。$\tilde{\nabla}<em>{k+1}$ 为variance reduction 中的梯度形式。$\tau</em>{1}$，$\tau<em>{2} \in[0,1]$ 为两个动量参数，$\alpha = \frac{1}{3\tau</em>{1}L}$。</p>
-<h2 id="Our-New-Technique-–-Katyusha-Momentum"><a href="#Our-New-Technique-–-Katyusha-Momentum" class="headerlink" title="Our New Technique – Katyusha Momentum"></a>Our New Technique – Katyusha Momentum</h2><p>最novel的部分是 $x<em>{k+1}$ 的更新步骤，是 $y</em>{k}$, $z<em>{k}$ 以及 $\tilde{x}$ 的凸组合。理论建议参数 $\tau</em>{2} = 0.5$，$\tau_{1} = \min{\sqrt{n\sigma/L}, 0.5}$。</p>
-<p>对于传统的加速梯度下降算法，$x<em>{k+1}$ 仅仅是 $y</em>{k}$ 和 $z<em>{k}$ 的凸组合，$z</em>{k}$ 起到了一个“动量”的作用，即将历史加权的梯度信息添加到 $y<em>{k+1}$ 上。比如假设 $\tau</em>{2} = 0, \tau<em>{1} = \tau$, $x</em>{0} = y<em>{0} = z</em>{0}$，我们可以得到：</p>
-<p>   <img src="/2021/01/27/GD/ka1.png" alt=" "></p>
-<p>由于 $\alpha$ 通常大于 $1/3L$，上述递推过程意味着随着迭代进行，梯度 $\tilde{\nabla}<em>{t}$ 的贡献越高。比如，$\tilde{\nabla}</em>{1}$ 的权重不断增大 ($\frac{1}{3L} &lt; ((1-\tau)\frac{1}{3L} + \tau\alpha) &lt; ((1 - \tau)^{2}\frac{1}{3L} + (1 - (1 - \tau)^{2})\alpha)$)。这就是一阶加速方法的核心思想。</p>
-<p>在Katyusha算法中，作者认为 $\tilde{x}$ 同等重要，它能保证 $x<em>{k+1}$ 不要太远离 $\tilde{x}$。$\tilde{x}$ 的添加可以看作是一个 “negative momentum”，使 $x</em>{k+1}$ back to $\tilde{x}$，抵消一部分前面迭代时的 positive momentum”。</p>
-<p>当 $\tau<em>{1} = \tau</em>{2} = 0.5$ 时，Katyusha同SVRG几乎一致。</p>
-<h1 id="L-SVRG-L-Katyusha-2019-Don’t-Jump-Through-Hoops-and-Remove-Those-Loops-SVRG-and-Katyusha-are-BetterWithout-the-Outer-Loop"><a href="#L-SVRG-L-Katyusha-2019-Don’t-Jump-Through-Hoops-and-Remove-Those-Loops-SVRG-and-Katyusha-are-BetterWithout-the-Outer-Loop" class="headerlink" title="[L-SVRG, L-Katyusha 2019] Don’t Jump Through Hoops and Remove Those Loops: SVRG and Katyusha are BetterWithout the Outer Loop"></a>[L-SVRG, L-Katyusha 2019] Don’t Jump Through Hoops and Remove Those Loops: SVRG and Katyusha are BetterWithout the Outer Loop</h1><p>SVRG和Katyusha算法的共同关键结构就是两者都包含一个外层循环 (outer loop)。最初先在outer loop上使用所有样本计算梯度，然后计算出来的结果再用于内层循环 (inner loop)，结合新的随机梯度信息，构造variance-reduced 梯度估计量。作者指出，由于SVRG和Katyusha算法都包括一个outer loop，所以存在一些问题，比如：算法很难分析；人们需要决定内部循环的次数。对于SVRG，理论上内部循环的最优次数取决于 $L$和 $\mu$，但是 $\mu$ 通常未知。由于这些问题存在，人们只能选择次优的inner loop size，通常设置内部循环次数为 $O(n)$ 或者 $n$。</p>
-<p>在这篇论文中，作者将外层循环 (outer loop) 丢弃，在每次迭代时采用掷硬币技巧决定是否计算梯度，从而解决了上述问题。作者证明，新提出的算法和原始两个算法具有同样的理论性质。</p>
-<p>   <img src="/2021/01/27/GD/loopless1.jpg" alt=" "><br>   <img src="/2021/01/27/GD/loopless1.jpg" alt=" "></p>
-<h1 id="L-SVRG-L-Katyusha-2019-L-SVRG-and-L-Katyusha-with-Arbitrary-Sampling"><a href="#L-SVRG-L-Katyusha-2019-L-SVRG-and-L-Katyusha-with-Arbitrary-Sampling" class="headerlink" title="[L-SVRG, L-Katyusha 2019] L-SVRG and L-Katyusha with Arbitrary Sampling"></a>[L-SVRG, L-Katyusha 2019] L-SVRG and L-Katyusha with Arbitrary Sampling</h1> 
+<h1 id="Collaborative-Learning"><a href="#Collaborative-Learning" class="headerlink" title="Collaborative Learning"></a>Collaborative Learning</h1><p>上述算法先在局部节点上进行学习，然后在进行网络通信。在这部分，作者提出了一个使节点可以同时进行基于局部数据和邻居节点信息更新模型参数的算法。相较于前面的算法，该算法通信成本较高，但是估计精度高于前者。</p>
+<h2 id="Problem-Formulation"><a href="#Problem-Formulation" class="headerlink" title="Problem Formulation"></a>Problem Formulation</h2><p> 优化目标：<br><img src="https://cdn.jsdelivr.net/gh/sugar-xue/BlogImages@main/Picbed1612341031(1" alt="1612341031(1)">.png)</p>
+<p>注意到，这里的置信度通过 $\mathcal{L}<em>{i}$ 体现，因为 $\mathcal{L}</em>{i}$ 为局部节点 $i$ 上所有观测的损失函数和。</p>
+<p>一般情况下，上述问题没有解析解，作者提出一个分散式迭代算法进行求解。</p>
+<h2 id="Asynchronous-Gossip-Algorithm-1"><a href="#Asynchronous-Gossip-Algorithm-1" class="headerlink" title="Asynchronous Gossip Algorithm"></a>Asynchronous Gossip Algorithm</h2><p>作者基于ADMM提出了一个异步分散式算法。本文的目的不是寻找一个consensus 解，因为我们的目标是为了学习到每个节点的personalized model. 作者通过将问题 (7) 进行变换为一个部分consensus问题，使用ADMMD进行求解。</p>
+<p>令 $\Theta<em>{i} \in \mathbb{R}^{(|\mathcal{N</em>{i}}|+1)\times p}$ 为变量 $\theta<em>{j} \in \mathbb{R}^{p}(j \in \mathcal{N</em>{i}} \bigcup {i})$ 的集合。定义 $\theta<em>{j}$ 为 $\Theta</em>{i}^{j}$。优化问题(7)重新写为：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/sugar-xue/BlogImages@main/Picbed1612341938(1" alt="1612341938(1)">.png)</p>
+<p>在这个目标函数中，所有的节点相互依赖，因为它们共享一个优化变量 $\in \Theta$。为了使用ADMM，需要将各个节点的优化变量独立，对于每个节点 $i$，定义一个local copy $\tilde{\Theta}<em>{i} \in \mathbb{R}^{(|\mathcal{N</em>{i}}|+1)\times p}$，添加等式约束：$\tilde{\Theta}<em>{i}^{i} = \tilde{\Theta}</em>{j}^{i}$，对于所有的 $i \in [n], j \in \mathcal{N}_{i}$。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/sugar-xue/BlogImages@main/Picbed1612342502(1" alt="1612342502(1)">.png)</p>
+<p>增广拉格朗日乘子：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/sugar-xue/BlogImages@main/Picbed1612342580(1" alt="1612342580(1)">.png)</p>
+<p>算法如下，假设时刻 $t$ 时节点 $i$ wakes up，选取邻居节点 $j \in \mathcal{N}_{i}$，定义 $e = (i,j)$，</p>
+<p><img src="https://cdn.jsdelivr.net/gh/sugar-xue/BlogImages@main/Picbed1612342728(1" alt="1612342728(1)">.png)</p>
+<p><img src="https://cdn.jsdelivr.net/gh/sugar-xue/BlogImages@main/Picbed1612342765(1" alt="1612342765(1)">.png)</p>
+<h1 id="Experiments"><a href="#Experiments" class="headerlink" title="Experiments"></a>Experiments</h1><h2 id="Collaborative-Linear-Classification"><a href="#Collaborative-Linear-Classification" class="headerlink" title="Collaborative Linear Classification"></a>Collaborative Linear Classification</h2><p>考虑100个节点，每个节点的目标是建立一个线性分类模型 in $\mathbb{R}^{p}$。为了方便可视化，每个节点的真实参数位于2维子空间：将其参数看作是 $\mathbb{R}^{p}$ 空间中的向量，前两项从正态分布中随机产生，剩余项为0。两个节点 $i$ 和节点 $j$ 的相似度通过参数距离的高斯核定义，定义 $\phi<em>{ij}$ 为两个真实参数在单位圆上投影的夹角，$W</em>{ij} = \exp(\cos \phi<em>{ij} - 1)/\sigma$，$\sigma = 0.1$。权重为负值的将被忽略。每个节点具有随机的训练样本，样本的标签为二元标签，由线性分类模型产生。以概率0.05随机使标签反转，以产生噪音数据。每个节点的损失函数为hinge损失：$l(\theta;(x</em>{i}, y<em>{i})) = \max(0, 1-y</em>{i}\theta^{T}x_{i})$。作者评估了模型在100个测试样本上的预测精度。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/sugar-xue/BlogImages@main/Picbed1612343843(1" alt="1612343843(1)">.png)</p>
+ 
       <!-- reward -->
       
       <div id="reword-out">
@@ -215,12 +207,12 @@ f(x) = \frac{1}{n}\sum_{i=1}^{n}f_{i}(x)</script><p>作者提出了一个叫做S
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/01/27/GD/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/01/30/17decentralized/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>  
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GD/" rel="tag">GD</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/FL/" rel="tag">FL</a></li></ul>
 
     </footer>
   </div>
@@ -228,19 +220,10 @@ f(x) = \frac{1}{n}\sum_{i=1}^{n}f_{i}(x)</script><p>作者提出了一个叫做S
    
   <nav class="article-nav">
     
-      <a href="/2021/01/30/17decentralized/" class="article-nav-link">
-        <strong class="article-nav-caption">上一篇</strong>
-        <div class="article-nav-title">
-          
-            Decentralized Collaborative Learning of Personalized Models over Networks
-          
-        </div>
-      </a>
     
-    
-      <a href="/2021/01/26/AL2SGD/" class="article-nav-link">
+      <a href="/2021/01/27/GD/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">Lower Bounds and Optimal Algorithms for Personalized Federated Learning</div>
+        <div class="article-nav-title">Gradient Descent, Stochastic Gradient Descent, Variance Reduction</div>
       </a>
     
   </nav>
