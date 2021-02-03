@@ -74,7 +74,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">2.6k</span>
+            <span class="post-count">2.7k</span>
         </span>
     </span>
 
@@ -83,7 +83,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">10 分钟</span>
+            <span class="post-count">11 分钟</span>
         </span>
     </span>
 </div>
@@ -93,11 +93,26 @@
     <div class="article-entry" itemprop="articleBody">
        
   
+<!-- TOC -->
+
+- [Abstract](#abstract)
+- [Introduction](#introduction)
+- [Preliminaries](#preliminaries)
+  - [Notations and Problem Setting](#notations-and-problem-setting)
+- [Model Propagation](#model-propagation)
+  - [Asynchronous Gossip Algorithm](#asynchronous-gossip-algorithm)
+- [Collaborative Learning](#collaborative-learning)
+  - [Problem Formulation](#problem-formulation)
+  - [Asynchronous Gossip Algorithm](#asynchronous-gossip-algorithm-1)
+- [Experiments](#experiments)
+  - [Collaborative Linear Classification](#collaborative-linear-classification)
+
+<!-- /TOC -->
+
 # Abstract
 考虑点对点的协作网络。本文解决的问题是：每个节点如何与具有相似目标的其他节点进行通信来改善本地模型？作者介绍了两种完全去中心化的算法，一种是受标签传播的启发，旨在平滑预先训练好的局部模型；第二种方法，节点基于本地数据核相邻节点进行迭代更新来共同学习和传播。  
 
 # Introduction
-
 数据不断产生，当前从数据中提取信息的主要方式是收集所有用户的个人数据于一个服务器上，然后进行数据挖掘。但是，中心化的方式存在一些问题，比如说一些用户拒绝提供个人数据，带宽和设备花费问题。即使一些算法允许数据分布在用户设备上，通常需要中心端来进行聚合和协调。
 
 在本文中，作者考虑完全去中心化的点对点网络。不同于那些求解全局模型的算法，本文关注于每个节点可以根据自身目标函数学习一个个性化模型。作者假设网络结构已知，该网络结构能够反映出不同节点的相似度（如果两个节点具有相似的目标函数，那么这两个节点在网络中是邻居），每个节点只知道与其直接相邻的节点。一个节点不仅可以根据自身数据学习模型，还可以结合它的邻居。假设每个节点只知道相邻节点的信息，不知道整个网络结构。
